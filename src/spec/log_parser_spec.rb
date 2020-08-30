@@ -7,18 +7,18 @@ RSpec.describe LogParser do
     subject do
       described_class.new(
         log_file: log_file_path,
-        log_file_validator: log_file_validator_double,
-        log_file_extractor: log_file_extractor_double,
-        log_file_print_formatter: log_file_print_formatter
+        validator: validator_double,
+        extractor: extractor_double,
+        print_formatter: print_formatter
       ).call
     end
 
     include_context 'with valid total_views and unique_views standard data'
 
     let(:log_file_path) { 'spec/support/fixtures/standard_log_file.log' }
-    let(:log_file_validator_double) { instance_double(LogFileValidator, valid?: log_file_valid) }
-    let(:log_file_extractor_double) { instance_double(LogFileExtractor) }
-    let(:log_file_print_formatter) { LogFilePrintFormatter.new }
+    let(:validator_double) { instance_double(LogFileValidator, valid?: log_file_valid) }
+    let(:extractor_double) { instance_double(LogFileExtractor) }
+    let(:print_formatter) { LogFilePrintFormatter.new }
 
     let(:extracted_data) { [standard_total_views_hash, standard_unique_views_hash] }
     let(:expected_printed_lists) do
@@ -41,8 +41,8 @@ RSpec.describe LogParser do
     end
 
     before do
-      allow(log_file_extractor_double).to receive(:extract).with(log_file_path).and_return(extracted_data)
-      allow(log_file_print_formatter).to receive(:call).with(*extracted_data).and_call_original
+      allow(extractor_double).to receive(:extract).with(log_file_path).and_return(extracted_data)
+      allow(print_formatter).to receive(:call).with(*extracted_data).and_call_original
     end
 
     context 'when log_file is valid' do
@@ -50,8 +50,8 @@ RSpec.describe LogParser do
 
       it 'prints message with both lists' do
         expect { subject }.to output(expected_printed_lists).to_stdout
-        expect(log_file_extractor_double).to have_received(:extract)
-        expect(log_file_print_formatter).to have_received(:call)
+        expect(extractor_double).to have_received(:extract)
+        expect(print_formatter).to have_received(:call)
       end
     end
 
@@ -60,7 +60,7 @@ RSpec.describe LogParser do
 
       it 'aborts script with error message' do
         expect { subject }.to raise_error(SystemExit, 'Log file is too large or has invalid format')
-        expect(log_file_extractor_double).not_to have_received(:extract)
+        expect(extractor_double).not_to have_received(:extract)
       end
     end
   end
