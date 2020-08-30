@@ -4,7 +4,7 @@ class LogFileValidator
   FILE_SIZE_LIMIT = 1_048_576
 
   def valid?(log_file)
-    return false if file_has_invalid_extension?(log_file) || file_is_too_large?(log_file)
+    return false if !log_file || file_has_invalid_extension?(log_file) || file_is_too_large?(log_file)
 
     true
   end

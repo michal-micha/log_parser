@@ -23,5 +23,11 @@ RSpec.describe LogFileValidator do
 
       it { is_expected.to eq false }
     end
+
+    context "when file path wasn't included" do
+      let(:log_file_path) { nil }
+
+      it { is_expected.to eq false }
+    end
   end
 end
